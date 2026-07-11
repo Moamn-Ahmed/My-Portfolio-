@@ -66,33 +66,49 @@
       e.preventDefault();
 
       const formData = new FormData(form);
-      formData.append("access_key", "93244065-3610-4c25-801b-b6cb95bb7b91");
+      const originalText = submitBtn.innerHTML;
 
-      const originalText = submitBtn.textContent;
-
-      submitBtn.textContent = "Sending...";
+      submitBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
       submitBtn.disabled = true;
 
+      if (formStatus) {
+        formStatus.innerHTML = "";
+      }
+
       try {
-        const response = await fetch("https://api.web3forms.com/submit", {
+        const response = await fetch("https://formspree.io/f/xaqrwode", {
           method: "POST",
           body: formData,
+          headers: {
+            Accept: "application/json",
+          },
         });
 
         const data = await response.json();
+        console.log("Form Response:", data);
 
         if (response.ok) {
-          alert("Success! Your message has been sent.");
+          if (formStatus) {
+            formStatus.innerHTML =
+              " Message sent successfully! I'll get back to you soon.";
+            formStatus.style.color = "#22c55e";
+            formStatus.style.fontWeight = "bold";
+          }
           form.reset();
+        } else {
+          throw new Error(data.error || "Something went wrong");
         }
       } catch (error) {
-        alert("Something went wrong. Please try again.");
-      } finally {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
+        console.error("Form Error:", error);
         if (formStatus) {
-          formStatus.textContent = "";
+          formStatus.innerHTML = "Error: " + error.message;
+          formStatus.style.color = "#ef4444";
+          formStatus.style.fontWeight = "bold";
         }
+      } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
       }
     });
   }
