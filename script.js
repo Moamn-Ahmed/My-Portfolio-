@@ -84,8 +84,6 @@
         if (response.ok) {
           alert("Success! Your message has been sent.");
           form.reset();
-        } else {
-          alert("Error: " + data.message);
         }
       } catch (error) {
         alert("Something went wrong. Please try again.");
